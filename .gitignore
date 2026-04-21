@@ -48,6 +48,7 @@ app.*.map.json
 *.json
 .env
 secret.dart
+secrets.dart
 secrets/
 installer/*.exe
 installer/*.zip
