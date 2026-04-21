@@ -21,7 +21,7 @@ class GithubRelease {
     if (tagName.toLowerCase().startsWith('v')) {
       tagName = tagName.substring(1);
     }
-    
+
     // Rechercher l'asset .exe (l'installateur)
     String url = '';
     if (json['assets'] != null && json['assets'].isNotEmpty) {
@@ -32,7 +32,7 @@ class GithubRelease {
         }
       }
     }
-    
+
     return GithubRelease(
       version: tagName,
       body: json['body'] ?? 'Pas de notes de version.',
@@ -42,26 +42,26 @@ class GithubRelease {
 }
 
 class UpdateService {
-  // TODO: Remplacer MANUELLEMENT par votre futur compte GitHub et nom de dépôt
-  static const String repoOwner = "MonCompte";
+  static const String repoOwner = "MatthieuJuguet";
   static const String repoName = "AgepaApp";
 
-  static const String apiUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest";
+  static const String apiUrl =
+      "https://api.github.com/repos/$repoOwner/$repoName/releases/latest";
 
   /// Vérifie si une MAJ est disponible. Retourne GithubRelease s'il y en a une, sinon null.
   static Future<GithubRelease?> checkForUpdates() async {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = packageInfo.version; 
+      final currentVersion = packageInfo.version;
 
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final release = GithubRelease.fromJson(data);
-        
+
         // S'il n'y a pas de fichier exécutable trouvé dans la release
         if (release.downloadUrl.isEmpty) {
-          return null; 
+          return null;
         }
 
         // Si la version distante est supérieure à la version locale
@@ -78,20 +78,29 @@ class UpdateService {
 
   /// Comparaison Sémantique simple (ex: 1.0.1 > 1.0.0)
   static bool _isNewerVersion(String remote, String local) {
-    List<int> remoteParts = remote.split('.').map((p) => int.tryParse(p) ?? 0).toList();
-    List<int> localParts = local.split('.').map((p) => int.tryParse(p) ?? 0).toList();
+    List<int> remoteParts = remote
+        .split('.')
+        .map((p) => int.tryParse(p) ?? 0)
+        .toList();
+    List<int> localParts = local
+        .split('.')
+        .map((p) => int.tryParse(p) ?? 0)
+        .toList();
 
     for (int i = 0; i < 3; i++) {
-        int r = i < remoteParts.length ? remoteParts[i] : 0;
-        int l = i < localParts.length ? localParts[i] : 0;
-        if (r > l) return true;
-        if (r < l) return false;
+      int r = i < remoteParts.length ? remoteParts[i] : 0;
+      int l = i < localParts.length ? localParts[i] : 0;
+      if (r > l) return true;
+      if (r < l) return false;
     }
     return false; // Equal versions
   }
 
   /// Télécharge le fichier exécutable et déclenche l'installation silencieuse
-  static Future<void> downloadAndInstall(String downloadUrl, Function(double) onProgress) async {
+  static Future<void> downloadAndInstall(
+    String downloadUrl,
+    Function(double) onProgress,
+  ) async {
     try {
       final tempDir = await getTemporaryDirectory();
       // On sauvegarde l'installeur dans le temp cache de l'utilisateur
@@ -105,22 +114,27 @@ class UpdateService {
       final file = File(filePath);
       final sink = file.openWrite();
 
-      await response.stream.map((chunk) {
-        bytesDownloaded += chunk.length;
-        if (contentLength != null && contentLength > 0) {
-          onProgress(bytesDownloaded / contentLength);
-        }
-        return chunk;
-      }).pipe(sink);
+      await response.stream
+          .map((chunk) {
+            bytesDownloaded += chunk.length;
+            if (contentLength != null && contentLength > 0) {
+              onProgress(bytesDownloaded / contentLength);
+            }
+            return chunk;
+          })
+          .pipe(sink);
 
       await sink.close();
 
       // On lance le programme téléchargé en mode vraiment silencieux
-      await Process.start(filePath, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/FORCECLOSEAPPLICATIONS']);
-      
+      await Process.start(filePath, [
+        '/VERYSILENT',
+        '/SUPPRESSMSGBOXES',
+        '/FORCECLOSEAPPLICATIONS',
+      ]);
+
       // On force la fermeture de notre application Dart pour libérer l'ancien .exe et permettre le remplacement InnoSetup
       exit(0);
-
     } catch (e) {
       print("Erreur lors du téléchargement ou de l'installation: $e");
       rethrow;

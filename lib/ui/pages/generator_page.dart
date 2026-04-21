@@ -516,6 +516,9 @@ class _GeneratorPageState extends ConsumerState<GeneratorPage> {
         if (!await dir.exists()) await dir.create(recursive: true);
       }
 
+      List<String> errors = [];
+      int successCount = 0;
+
       for (int i = 0; i < state.contacts.length; i++) {
         if (_isCancelled) {
           notifier.setProcessingProgress(0, 'Annulation en cours...');
@@ -523,6 +526,7 @@ class _GeneratorPageState extends ConsumerState<GeneratorPage> {
         }
 
         final contact = state.contacts[i];
+        try {
         double progress = 0.1 + (i / state.contacts.length) * 0.9;
         notifier.setProcessingProgress(progress, 'Traitement : Dr. ${contact.nom}');
 
@@ -538,25 +542,89 @@ class _GeneratorPageState extends ConsumerState<GeneratorPage> {
           montant: state.montant.toString(),
         );
 
-        if (isGmail) {
-          final bodyText = "Bonjour Docteur ${contact.nom.toUpperCase()},\n\nVeuillez trouver en pièce jointe votre attestation de cotisation à l'AGEPA pour l'année ${state.annee}.\n\nNous vous remercions de votre confiance.\n\nBien cordialement,\n\nDocteur F Juguet\nTrésorier";
-          await GmailService.sendOrDraft(
-            recipient: contact.email,
-            subject: "Attestation AGEPA ${state.annee} - Dr ${contact.prenom} ${contact.nom.toUpperCase()}",
-            body: bodyText,
-            attachment: pdfFile,
-            isDraft: state.distributionMode == DistributionMode.gmailDrafts,
-          );
+          if (isGmail) {
+            final bodyText =
+                "Bonjour Docteur ${contact.nom.toUpperCase()},\n\nVeuillez trouver en pièce jointe votre attestation de cotisation à l'AGEPA pour l'année ${state.annee}.\n\nNous vous remercions de votre confiance.\n\nBien cordialement,\n\nDocteur F Juguet\nTrésorier";
+
+            if (contact.email.isEmpty || !contact.email.contains('@')) {
+              throw Exception("Email invalide ou manquant");
+            }
+
+            await GmailService.sendOrDraft(
+              recipient: contact.email,
+              subject:
+                  "Attestation AGEPA ${state.annee} - Dr ${contact.prenom} ${contact.nom.toUpperCase()}",
+              body: bodyText,
+              attachment: pdfFile,
+              isDraft: state.distributionMode == DistributionMode.gmailDrafts,
+            );
+
+            // Petit délai pour éviter d'être bloqué par les quotas Gmail sur de gros volumes
+            await Future.delayed(const Duration(milliseconds: 800));
+          }
+          successCount++;
+        } catch (e) {
+          errors.add("Dr. ${contact.nom}: $e");
         }
       }
 
       if (_isCancelled) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Opération annulée par l\'utilisateur.')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Opération annulée par l\'utilisateur.')),
+          );
+        }
       } else {
-        notifier.setProcessingProgress(1.0, 'Succès ! Les attestations sont prêtes.');
+        if (errors.isEmpty) {
+          notifier.setProcessingProgress(
+            1.0,
+            'Succès ! Toutes les attestations ($successCount) sont prêtes.',
+          );
+        } else {
+          notifier.setProcessingProgress(
+            1.0,
+            'Terminé avec ${errors.length} erreur(s) sur ${state.contacts.length}.',
+          );
+        }
+
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) setState(() => _currentStep = 0);
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Opération terminée avec succès.'), backgroundColor: AppTheme.success));
+
+        if (mounted) {
+          if (errors.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Opération terminée avec succès.'),
+                backgroundColor: AppTheme.success,
+              ),
+            );
+          } else {
+            // Afficher une boîte de dialogue avec les erreurs
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text('${errors.length} erreur(s) rencontrée(s)'),
+                content: SizedBox(
+                  width: 400,
+                  height: 300,
+                  child: ListView.builder(
+                    itemCount: errors.length,
+                    itemBuilder: (c, idx) => ListTile(
+                      leading: const Icon(Icons.error_outline, color: AppTheme.error),
+                      title: Text(errors[idx], style: const TextStyle(fontSize: 13)),
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Compris'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
       }
     } catch (e) {
       if (mounted) {

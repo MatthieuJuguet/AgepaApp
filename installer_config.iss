@@ -2,7 +2,7 @@
 ; Assurez-vous d'avoir installé Inno Setup (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "AGEPA App"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "AGEPA"
 #define MyAppExeName "agepa_app.exe"
 #define BuildPath "d:\Workspace\FlutterApps\agepa_app\build\windows\x64\runner\Release"
