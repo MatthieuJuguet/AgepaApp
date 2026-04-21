@@ -1,0 +1,36 @@
+name: agepa_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  csv: ^8.0.0
+  desktop_drop: ^0.7.0
+  excel: ^4.0.6
+  excel2003: ^1.0.0
+  file_picker: ^11.0.2
+  flutter:
+    sdk: flutter
+  flutter_markdown: ^0.7.7+1
+  flutter_riverpod: ^3.3.1
+  google_fonts: ^8.0.2
+  googleapis: ^16.0.0
+  googleapis_auth: ^2.0.0
+  http: ^1.6.0
+  mailer: ^7.1.0
+  package_info_plus: ^9.0.1
+  path_provider: ^2.1.5
+  pdf: ^3.12.0
+  url_launcher: ^6.3.2
+  window_manager: ^0.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

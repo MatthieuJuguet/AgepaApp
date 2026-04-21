@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trame AGEPA - Design Moderne</title>
+    <!-- Chargement de typographies haut de gamme depuis Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Styles externes -->
+    <link rel="stylesheet" href="../style_attestation.css">
+</head>
+
+<body>
+
+    <div class="a4-page">
+        <!-- Bandeau décoratif coloré en haut -->
+        <div class="top-accent"></div>
+
+        <div class="page-content">
+            <!-- EN-TÊTE -->
+            <header>
+                <div class="logo-section">
+                    <!-- Logo repensé : Mix document et croix médicale abstraite -->
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="25" y="15" width="45" height="60" rx="6" stroke="currentColor" stroke-width="5" />
+                        <path d="M40 35H60" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+                        <path d="M40 50H50" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+                        <circle cx="70" cy="70" r="18" fill="currentColor" />
+                        <path d="M64 70H76M70 64V76" stroke="white" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+
+                    <div class="brand-name">
+                        <h1>A G E P A</h1>
+                        <p>Amicale des Gastro-entérologues<br>Proctologues d'Aquitaine</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CORPS PRINCIPAL -->
+            <div class="main-body">
+
+                <!-- BARRE LATÉRALE (MEMBRES) -->
+                <div class="committee">
+                    <div class="committee-group">
+                        <h4>Président</h4>
+                        <p>Dr Ph. Hemery</p>
+                    </div>
+
+                    <div class="committee-group">
+                        <h4>Secrétaires</h4>
+                        <p>Dr M. Eleouet</p>
+                        <p>Dr Ndobo-Epoy</p>
+                    </div>
+
+                    <div class="committee-group">
+                        <h4>Trésoriers</h4>
+                        <p>Dr J-P Vove</p>
+                        <p>Dr F Juguet</p>
+                    </div>
+                </div>
+
+                <!-- CONTENU DE LA LETTRE -->
+                <div class="content">
+
+                    <h2 class="document-title">Attestation de Cotisation</h2>
+
+                    <div class="recipient-card">
+                        <div class="label">Délivrée à</div>
+                        <div class="name">Docteur [[NOM_DESTINATAIRE]]</div>
+                    </div>
+
+                    <div class="text-body">
+                        Nous accusons bonne réception de votre règlement d'un montant de <span
+                            class="amount">[[MONTANT]]
+                            euros</span>,
+                        correspondant à votre cotisation annuelle à l'<span class="highlight">AGEPA</span> pour l'année
+                        [[ANNEE]].
+                    </div>
+
+                    <div class="salutation">
+                        Avec nos sincères remerciements.
+                    </div>
+
+                    <div class="signature-block">
+                        <div class="signature-content">
+                            <div class="signer-name">Docteur F Juguet</div>
+                            <div class="signer-title">Trésorier de l'association</div>
+                            <!-- Simulation vectorielle sympa d'une signature bleue -->
+                            <svg class="fake-sig" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10 40C20 20 40 10 50 25C60 40 70 50 80 30C90 10 110 5 120 20C130 35 140 45 150 25C160 5 180 15 190 35"
+                                    stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M45 25C55 10 75 15 85 30" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M130 50 L160 50" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <div class="doc-date"
+                                style="margin-top: 20px; font-size: 11pt; color: #475569; letter-spacing: 0.02em;">
+                                Bordeaux, le [[DATE_GENERATION]]</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PIED DE PAGE -->
+            <footer>
+                <div>
+                    <strong>Association Loi 1901 no. 2/16758</strong><br>
+                    Créée le 3 février 1988 • Non assujettie à la TVA
+                </div>
+                <div class="footer-lines">
+                    159 Bd Godard, 33110 Le Bouscat<br>
+                    proctologues.bordeaux@gmail.com
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
